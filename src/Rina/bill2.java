@@ -1,0 +1,557 @@
+package Rina;
+
+
+
+import Chathura.DB;
+import Imal.playSond;
+import java.util.Vector;
+
+import javax.swing.table.DefaultTableModel;
+import de.javasoft.plaf.synthetica.SyntheticaBlackEyeLookAndFeel;
+import java.awt.Color;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.UIManager;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JRViewer;
+
+
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * bill2.java
+ *
+ * Created on Apr 17, 2010, 5:48:00 PM
+ */
+
+/**
+ *
+ * @author User
+ */
+public class bill2 extends javax.swing.JFrame {
+ String probil2;
+ String probilamt;
+ String proID;
+ String proName;
+ String contractorprice;
+
+
+
+ 
+ 
+
+ void   probill2(String a){
+
+     probil2 = a;
+     tf_b_id.setText(probil2);
+
+
+
+
+} void probill3 (String b){
+    probilamt = b;
+    tf_b_1.setText(probilamt);
+
+
+   }void probill4 (String ID){
+
+          //proID1
+
+    try {
+
+        Connection con =  Db.getMyConnection();
+        Statement stmt =  con.createStatement();
+
+            ResultSet rset1 = stmt.executeQuery("select* from project where ProjectID = '"+ID+"' ");
+            while(rset1.next()){
+            tf_b_2.setText(rset1.getString("pro_EndDate"));
+            tf_bill_tvr.setText(rset1.getString("TotalVatReservation"));
+            proName = rset1.getString("ProjectName");
+            contractorprice = rset1.getString("ContractorPrice");
+
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            Date d1 = new Date();
+
+            long ProEndDate = (dateFormat.parse(rset1.getString("pro_EndDate"))).getTime();
+            long ProStartDate = dateFormat.parse(rset1.getString("pro_StatDate")).getTime();
+            long Datetoday = d1.getTime();
+            long ContractorPrize = Integer.parseInt(rset1.getString("ContractorPrice"));
+            long ValuePaid = ContractorPrize-Integer.parseInt(probilamt);
+
+            long PredictedEndDate = ((ContractorPrize*(Datetoday-ProStartDate))/ValuePaid)+ProStartDate;
+            DateFormat dataformat =  DateFormat.getDateInstance(DateFormat.LONG);
+            String PredictEnd = dataformat.format(PredictedEndDate);
+            tf_b_3.setText(PredictEnd);
+               
+
+            if(ProEndDate<PredictedEndDate){
+                tf_b_3.setForeground(Color.red);
+
+            }else{
+               tf_b_3.setForeground(Color.green);
+            }
+            
+
+ 
+          
+
+
+            }
+
+            ResultSet rset2 = stmt.executeQuery("select RecoveredAmount from advance_bond where ProjectID = '"+ID+"' ");
+            while(rset2.next()){
+            tf_bill_tar.setText(rset2.getString("RecoveredAmount"));
+
+
+            }
+
+            DefaultTableModel dft2 = (DefaultTableModel) tab_bill.getModel();
+            dft2.setRowCount(0);
+
+            ResultSet rset3= stmt.executeQuery("select BillNo,BillTitle,BillDate,BillAmount from bill_detail where ProjectID = '"+ID+"' ");
+            while (rset3.next()){
+
+            Vector v1 = new Vector();
+            v1.add(rset3.getString("BillNo"));
+            v1.add(rset3.getString("BillTitle"));
+            v1.add(rset3.getString("BillDate"));
+            v1.add(rset3.getString("BillAmount"));
+            dft2.addRow(v1);
+           
+
+            }
+
+
+            
+} catch (Exception e) {
+            System.out.println(e);
+}
+
+
+
+
+    //jasper for tabbed pane
+
+   try{
+            String reportSource = playSond.path_reso+"/JasperReports/graph.jrxml";
+            Map<String, Object>params = new HashMap<String, Object>();
+
+
+           params.put( "proID1",probil2);
+
+
+
+             JasperReport jasperReport = JasperCompileManager.compileReport(reportSource);
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            Connection conn = (Connection) DB.getMyConnectionForJasper();
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params,conn);
+
+           
+            conn.close();
+
+            JRViewer h = new JRViewer(jasperPrint);
+            jTabbedPane2.add("", h);
+            h.setZoomRatio((float) 0.6);
+
+
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
+
+ 
+
+
+}
+    /** Creates new form bill2 */
+    public bill2() {
+
+        initComponents();
+
+        
+        
+    }
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        tf_b_id = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        tf_b_1 = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        tf_b_2 = new javax.swing.JTextField();
+        tf_b_3 = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        tf_bill_tar = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        tf_bill_tvr = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tab_bill = new javax.swing.JTable();
+        jToolBar1 = new javax.swing.JToolBar();
+        jTabbedPane2 = new javax.swing.JTabbedPane();
+        jButton2 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12));
+        jLabel2.setText("Project ID");
+
+        tf_b_id.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_b_idActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12));
+        jLabel3.setText("Amount yet to be paid");
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12));
+        jLabel5.setText("End Date of Project");
+
+        tf_b_2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_b_2ActionPerformed(evt);
+            }
+        });
+
+        tf_b_3.setFont(new java.awt.Font("Tahoma", 1, 11));
+        tf_b_3.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        tf_b_3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_b_3ActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 12));
+        jLabel7.setText("Predicted End Date:");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12));
+        jLabel4.setText("Total Advance Recovery");
+
+        tf_bill_tar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_bill_tarActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 12));
+        jLabel6.setText("Total VAT Reservation");
+
+        tf_bill_tvr.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_bill_tvrActionPerformed(evt);
+            }
+        });
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 11));
+        jLabel8.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel8.setText("Note* This is Just A System Prediction Only ");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jSeparator1)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(18, 18, 18)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(tf_b_3)
+                                .addComponent(tf_b_2)
+                                .addComponent(tf_bill_tvr, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(tf_bill_tar, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+                                .addComponent(tf_b_1)
+                                .addComponent(tf_b_id)))))
+                .addContainerGap(44, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGap(46, 46, 46)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(tf_b_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tf_b_1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(45, 45, 45)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(tf_bill_tar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(tf_bill_tvr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(tf_b_2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(53, 53, 53)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(tf_b_3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addComponent(jLabel8)
+                .addGap(44, 44, 44))
+        );
+
+        jPanel3.setBackground(new java.awt.Color(204, 204, 204));
+
+        tab_bill.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "           Bill No", "           Bill Title", "           Date", "        Final Amount"
+            }
+        ));
+        tab_bill.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tab_billMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tab_bill);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(274, 274, 274))
+        );
+
+        jToolBar1.setBackground(new java.awt.Color(255, 0, 0));
+        jToolBar1.setRollover(true);
+
+        jTabbedPane2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Rina/delete_16.png"))); // NOI18N
+        jButton2.setText("Cancel");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Rina/right_16.png"))); // NOI18N
+        jButton1.setText("Report On Bill Details");
+        jButton1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Andalus", 1, 28));
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Rina/clipboard_32.png"))); // NOI18N
+        jLabel1.setText("Bill Details");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 821, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
+                                .addComponent(jButton1))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton2)
+                            .addComponent(jButton1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        setBounds((screenSize.width-849)/2, (screenSize.height-628)/2, 849, 628);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void tf_b_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_b_idActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_tf_b_idActionPerformed
+
+    private void tf_b_2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_b_2ActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_tf_b_2ActionPerformed
+
+    private void tf_b_3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_b_3ActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_tf_b_3ActionPerformed
+
+    private void tf_bill_tarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_bill_tarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tf_bill_tarActionPerformed
+
+    private void tf_bill_tvrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_bill_tvrActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tf_bill_tvrActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+playSond.ButtonClick();
+        Bill1 b1 = new Bill1();
+b1.setVisible(true);
+String pbill = tf_b_id.getText();
+b1.probill2(pbill,tf_b_1.getText(),proName,contractorprice,tf_bill_tvr.getText());
+b1.bill1jasper();
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+ playSond.ButtonClick();
+    this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void tab_billMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_billMouseClicked
+       Vector v = new Vector();
+      v.add(tab_bill.getValueAt(tab_bill.getSelectedRow(),0));
+      //***************to chatura's interface*************************************
+
+    }//GEN-LAST:event_tab_billMouseClicked
+
+    /**
+    * @param args the command line arguments
+    */
+    public static void main(String args[]) {
+        try {
+            UIManager.setLookAndFeel(new SyntheticaBlackEyeLookAndFeel());
+        } catch (Exception e) {
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new bill2().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JTable tab_bill;
+    private javax.swing.JTextField tf_b_1;
+    private javax.swing.JTextField tf_b_2;
+    private javax.swing.JTextField tf_b_3;
+    private javax.swing.JTextField tf_b_id;
+    private javax.swing.JTextField tf_bill_tar;
+    private javax.swing.JTextField tf_bill_tvr;
+    // End of variables declaration//GEN-END:variables
+
+}
